@@ -1,8 +1,7 @@
-//register.ts
+//invoiceCreation.ts
 import { prisma } from "@/lib/prisma";
 import { FastifyReply, FastifyRequest } from "fastify"; //types
 import * as z from "zod";
-import { hash } from "bcryptjs";
 
 // funtion
 export async function invoiceController(
@@ -10,25 +9,43 @@ export async function invoiceController(
   res: FastifyReply // type for res to work
 ) {
   const invoiceSchema = z.object({
-    buildingName: z.string(),
     price: z.number(),
-    address: z.string(),
     invoiceNum: z.string(),
     serviceDescription: z.string(),
     unit: z.string(),
   });
-  const { buildingName, price, address, invoiceNum, serviceDescription, unit } =
-    invoiceSchema.parse(req.body);
+
+  const buildingNameSchema = z.object({
+    buildingName: z.string(),
+  });
+
+  const useridSchema = z.object({
+    userid: z.string(),
+  });
+
+  const { buildingName } = buildingNameSchema.parse(req.body);
+
+  const { userid } = useridSchema.parse(req.params);
+
+  const { price, invoiceNum, serviceDescription, unit } = invoiceSchema.parse(
+    req.body
+  );
+
+  const building = await prisma.user.findUnique({
+    where: { id: userid },
+    select: { Buildings: true },
+  });
 
   const invoice = await prisma.invoice.create({
     data: {
-      buildingName,
       price,
-      address,
       invoiceNum,
       serviceDescription,
       unit,
+      userId: userid,
+      buildingsId: building.Buildings.map((building) => building.id),
     },
   });
+
   return res.status(201).send(invoice);
 }

@@ -14,20 +14,33 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
+  id        String      @id @default(uuid())
   name      String
-  email     String
+  email     String      @unique
   password  String
-  createdAt DateTime @default(now())
+  createdAt DateTime    @default(now())
+  Invoice   Invoice[]
+  Buildings Buildings[]
 }
 
 model Invoice {
-  id                 String   @id @default(uuid())
-  buildingName       String
+  id                 String    @id @default(uuid())
   price              Float
-  address            String
   invoiceNum         String
   serviceDescription String
   unit               String
-  createdAt          DateTime @default(now())
+  user               User      @relation(fields: [userId], references: [id])
+  createdAt          DateTime  @default(now())
+  userId             String
+  building           Buildings @relation(fields: [buildingsId], references: [id])
+  buildingsId        String
+}
+
+model Buildings {
+  id           String    @id @default(uuid())
+  buildingName String    @unique
+  address      String
+  user         User      @relation(fields: [userId], references: [id])
+  userId       String
+  Invoice      Invoice[]
 }

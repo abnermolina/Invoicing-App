@@ -18,12 +18,12 @@ export async function registerController(
 
   const hashedPassword = await hash(password, 10);
 
-  const user = await prisma.user.create({
+  await prisma.user.create({
     data: {
       email,
       name,
       password: hashedPassword,
     },
   });
-  return res.status(201).send(user);
+  return res.status(201).send({ message: "User created successfully" });
 }
