@@ -15,15 +15,15 @@ export async function invoiceController(
     unit: z.string(),
   });
 
-  const buildingNameSchema = z.object({
-    buildingName: z.string(),
+  const buildingidSchema = z.object({
+    buildingid: z.string(),
   });
 
   const useridSchema = z.object({
     userid: z.string(),
   });
 
-  const { buildingName } = buildingNameSchema.parse(req.body);
+  const { buildingid } = buildingidSchema.parse(req.params);
 
   const { userid } = useridSchema.parse(req.params);
 
@@ -43,9 +43,14 @@ export async function invoiceController(
       serviceDescription,
       unit,
       userId: userid,
-      buildingsId: building.Buildings.map((building) => building.id),
+      buildingsId: buildingid,
     },
   });
 
   return res.status(201).send(invoice);
+
+  //  TO DO : GET BUILDING ID WITHOUT PASSING URL,
+  //  NODEMAILER SEND EMAIL TO COMPANY,
+  //  CREATE COMPANY TABLE,
+  //  UPDATE & DELETE USER, BUILDING, INV, COMPANY INFORMATION
 }

@@ -21,6 +21,7 @@ model User {
   createdAt DateTime    @default(now())
   Invoice   Invoice[]
   Buildings Buildings[]
+  Company   Company[]
 }
 
 model Invoice {
@@ -29,10 +30,10 @@ model Invoice {
   invoiceNum         String
   serviceDescription String
   unit               String
-  user               User      @relation(fields: [userId], references: [id])
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt          DateTime  @default(now())
   userId             String
-  building           Buildings @relation(fields: [buildingsId], references: [id])
+  building           Buildings @relation(fields: [buildingsId], references: [id], onDelete: Cascade)
   buildingsId        String
 }
 
@@ -40,7 +41,16 @@ model Buildings {
   id           String    @id @default(uuid())
   buildingName String    @unique
   address      String
-  user         User      @relation(fields: [userId], references: [id])
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId       String
   Invoice      Invoice[]
+}
+
+model Company {
+  id             String @id @default(uuid())
+  companyName    String @unique
+  companyAddress String
+  // companyLogo
+  user           User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         String
 }
