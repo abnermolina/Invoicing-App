@@ -12,7 +12,9 @@ export async function registerController(
   const registerSchema = z.object({
     name: z.string(),
     email: z.string().email(),
-    password: z.string(),
+    password: z
+      .string()
+      .min(8, { message: "Password must be at least 8 characters" }),
   });
   const { email, name, password } = registerSchema.parse(req.body);
 

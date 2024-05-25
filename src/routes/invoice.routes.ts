@@ -1,7 +1,23 @@
 import fastify, { FastifyInstance } from "fastify";
-import { app } from "../app";
 import { invoiceController } from "@/http/controllers/invoiceCreations";
+import { updateInvoiceController } from "@/http/controllers/updateInvoice";
+import { jwtAuthenticate } from "@/middlewares/authUser";
+import { deleteInvoiceController } from "@/http/controllers/deleteInvoice";
 
-export async function invoiceRoutes(exp: FastifyInstance) {
-  app.post("/invoices/:userid/:buildingid", invoiceController);
+export async function invoiceRoutes(app: FastifyInstance) {
+  app.post(
+    "/invoices/:buildingid",
+    { onRequest: [jwtAuthenticate] },
+    invoiceController
+  );
+  app.patch(
+    "/invoices/:invoiceid",
+    { onRequest: [jwtAuthenticate] },
+    updateInvoiceController
+  );
+  app.delete(
+    "/invoices/:invoiceid",
+    { onRequest: [jwtAuthenticate] },
+    deleteInvoiceController
+  );
 }

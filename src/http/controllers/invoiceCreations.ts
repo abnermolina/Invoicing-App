@@ -19,17 +19,13 @@ export async function invoiceController(
     buildingid: z.string(),
   });
 
-  const useridSchema = z.object({
-    userid: z.string(),
-  });
-
   const { buildingid } = buildingidSchema.parse(req.params);
-
-  const { userid } = useridSchema.parse(req.params);
 
   const { price, invoiceNum, serviceDescription, unit } = invoiceSchema.parse(
     req.body
   );
+
+  const userid = req.user.sub;
 
   const building = await prisma.user.findUnique({
     where: { id: userid },

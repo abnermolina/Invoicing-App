@@ -13,11 +13,7 @@ export async function companyController(
     companyAddress: z.string(),
   });
 
-  const useridSchema = z.object({
-    userid: z.string(),
-  });
-
-  const { userid } = useridSchema.parse(req.params);
+  const userid = req.user.sub;
 
   const { companyName, companyAddress } = companySchema.parse(req.body);
 

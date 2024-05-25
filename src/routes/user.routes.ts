@@ -5,11 +5,12 @@ import { getUserProfile } from "@/http/controllers/getUserProfile";
 import { Login } from "@/http/controllers/userLogin";
 import { deleteUserController } from "@/http/controllers/deleteUser";
 import { updateUserController } from "@/http/controllers/updateUserInfo";
+import { jwtAuthenticate } from "@/middlewares/authUser";
 
-export async function userRoutes(exp: FastifyInstance) {
+export async function userRoutes(app: FastifyInstance) {
   app.post("/users", registerController);
-  app.get("/profile/:userid", getUserProfile);
+  app.get("/profile", { onRequest: [jwtAuthenticate] }, getUserProfile);
   app.post("/login", Login);
-  app.delete("/users/:userid", deleteUserController);
-  app.patch("/users/:userid", updateUserController);
+  app.delete("/users", { onRequest: [jwtAuthenticate] }, deleteUserController);
+  app.patch("/users", { onRequest: [jwtAuthenticate] }, updateUserController);
 }

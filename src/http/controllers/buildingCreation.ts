@@ -13,11 +13,7 @@ export async function buildingController(
     address: z.string(),
   });
 
-  const useridSchema = z.object({
-    userid: z.string(),
-  });
-
-  const { userid } = useridSchema.parse(req.params);
+  const userid = req.user.sub;
 
   const { buildingName, address } = buildingSchema.parse(req.body);
 

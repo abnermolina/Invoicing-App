@@ -14,14 +14,10 @@ export async function updateUserController(
     password: z.string().optional(),
   });
 
-  const useridSchema = z.object({
-    userid: z.string(),
-  });
+  const userid = req.user.sub;
 
   try {
     const { name, email, password } = updateUserSchema.parse(req.body);
-
-    const { userid } = useridSchema.parse(req.params);
 
     const hashedPassword = await hash(password!, 10); // password! notes that it is not null
 

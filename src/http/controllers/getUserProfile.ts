@@ -7,15 +7,13 @@ export async function getUserProfile(
   req: FastifyRequest, // type to req work from fastify
   res: FastifyReply // type for res to work
 ) {
-  const profileSchema = z.object({
-    userid: z.string(),
-  });
-  const { userid } = profileSchema.parse(req.params);
+  const userid = req.user.sub;
 
   const user = await prisma.user.findUnique({
     where: {
       id: userid,
     },
+    include: { Buildings: true, Invoice: true, Company: true },
   });
   return res.status(200).send({
     user: user,

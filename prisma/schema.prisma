@@ -50,7 +50,7 @@ model Company {
   id             String @id @default(uuid())
   companyName    String @unique
   companyAddress String
-  // companyLogo
+  companyLogo    String
   user           User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId         String
 }

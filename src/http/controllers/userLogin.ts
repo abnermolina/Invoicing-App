@@ -20,19 +20,36 @@ export async function Login(
       },
     });
 
+    const token = await res.jwtSign(
+      {},
+      {
+        sign: {
+          sub: loginUser?.id,
+        },
+      }
+    );
+
     const passwordMatch = await bcrypt.compare(
       password,
       loginUser?.password || ""
     );
 
     if (!loginUser) {
-      return res.status(401).send({ message: "user" });
+      return res.status(401).send({ message: "Incorrect email" });
     }
     if (!passwordMatch) {
-      return res.status(401).send({ message: "pass" });
+      return res.status(401).send({ message: "Incorrect password" });
     }
 
-    return res.status(200).send({ message: "success" });
+    return res
+      .status(200)
+      .setCookie("token", token, {
+        path: "/",
+        secure: true, // send cookie over HTTPS only
+        httpOnly: true,
+        sameSite: true, // alternative CSRF protection
+      })
+      .send({ token });
   } catch (error) {
     console.log(error);
   }
