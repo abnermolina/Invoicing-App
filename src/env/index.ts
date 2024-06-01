@@ -3,7 +3,7 @@ import * as z from "zod";
 
 const envSchema = z.object({
   NODE_ENV: z.enum(["dev", "production", "test"]).default("dev"),
-  PORT: z.coerce.number().default(3000),
+  PORT: z.coerce.number().default(3333),
   SECRET_JWT: z.string(),
   SECRET_COOKIE: z.string(),
 });
