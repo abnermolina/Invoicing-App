@@ -73,12 +73,10 @@ async function Login(req, res) {
     }
     return res.status(200).setCookie("token", token, {
       path: "/",
-      secure: true,
-      // send cookie over HTTPS only
       httpOnly: true,
-      sameSite: true
-      // alternative CSRF protection
-    }).send({ token });
+      maxAge: 7 * 86400,
+      signed: true
+    }).send({ message: "Login successful" });
   } catch (error) {
     console.log(error);
   }

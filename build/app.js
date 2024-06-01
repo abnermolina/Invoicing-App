@@ -109,12 +109,10 @@ async function Login(req, res) {
     }
     return res.status(200).setCookie("token", token, {
       path: "/",
-      secure: true,
-      // send cookie over HTTPS only
       httpOnly: true,
-      sameSite: true
-      // alternative CSRF protection
-    }).send({ token });
+      maxAge: 7 * 86400,
+      signed: true
+    }).send({ message: "Login successful" });
   } catch (error) {
     console.log(error);
   }
@@ -183,6 +181,14 @@ async function jwtAuthenticate(req, res) {
   }
 }
 
+// src/http/controllers/userLogout.ts
+async function Logout(req, res) {
+  return res.clearCookie("token", {
+    path: "/"
+    // Ensure the path matches the cookie path
+  }).status(200).send({ message: "Logout successful" });
+}
+
 // src/routes/user.routes.ts
 async function userRoutes(app2) {
   app2.post("/users", registerController);
@@ -190,6 +196,7 @@ async function userRoutes(app2) {
   app2.post("/login", Login);
   app2.delete("/users", { onRequest: [jwtAuthenticate] }, deleteUserController);
   app2.patch("/users", { onRequest: [jwtAuthenticate] }, updateUserController);
+  app2.post("/logout", Logout);
 }
 
 // src/http/controllers/invoiceCreations.ts
@@ -329,13 +336,18 @@ async function buildingController(req, res) {
     buildingName: z7.string(),
     address: z7.string()
   });
+  const companyidSchema = z7.object({
+    companyid: z7.string()
+  });
   const userid = req.user.sub;
   const { buildingName, address } = buildingSchema.parse(req.body);
+  const { companyid } = companyidSchema.parse(req.params);
   const building = await prisma.buildings.create({
     data: {
       buildingName,
       address,
-      userId: userid
+      userId: userid,
+      companyId: companyid
     }
   });
   return res.status(201).send(building);
@@ -414,7 +426,11 @@ async function deleteBuildingController(req, res) {
 
 // src/routes/buildings.route.ts
 async function buildingRoutes(app2) {
-  app2.post("/buildings", { onRequest: [jwtAuthenticate] }, buildingController);
+  app2.post(
+    "/buildings/:companyid",
+    { onRequest: [jwtAuthenticate] },
+    buildingController
+  );
   app2.patch(
     "/buildings/:buildingid",
     { onRequest: [jwtAuthenticate] },
@@ -440,7 +456,8 @@ async function companyController(req, res) {
     data: {
       companyName,
       companyAddress,
-      userId: userid
+      userId: userid,
+      companyLogo: ""
     }
   });
   return res.status(201).send(company);
@@ -517,19 +534,64 @@ async function deleteCompanyController(req, res) {
   }
 }
 
+// src/http/controllers/uploadCompanyLogo.ts
+var import_zod = require("zod");
+var import_aws_sdk = require("aws-sdk");
+var import_dotenv = require("dotenv");
+var import_uuid = require("uuid");
+var import_path = __toESM(require("path"));
+async function uploadLogoController(req, res) {
+  (0, import_dotenv.config)();
+  const s3 = new import_aws_sdk.S3({
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    region: process.env.AWS_REGION
+  });
+  const uploadDataSchema = import_zod.z.object({
+    companyid: import_zod.z.string()
+    // Expecting a string for company ID
+  });
+  const { companyid } = uploadDataSchema.parse(req.params);
+  const image = await req.file();
+  const userid = req.user.sub;
+  if (!image) {
+    return res.status(400).send({ message: "No logo uploaded" });
+  }
+  const fileExtension = import_path.default.extname(image.filename);
+  const s3Key = `${(0, import_uuid.v4)()}${fileExtension}`;
+  const uploadParams = {
+    Bucket: process.env.AWS_S3_BUCKET_NAME,
+    // Bucket name from environment variables
+    Key: s3Key,
+    // Unique key for the file in S3
+    Body: image?.file,
+    // Image data
+    ContentType: image.mimetype
+    // Mime type of the image
+  };
+  const s3Response = await s3.upload(uploadParams).promise();
+  const updateCompany = await prisma.company.update({
+    where: {
+      id: companyid,
+      // Company ID
+      userId: userid
+      // User ID
+    },
+    data: {
+      companyLogo: s3Response.Location
+      // URL of the uploaded logo in S3
+    }
+  });
+  return res.status(200).send({ message: "Logo uploaded successfully", updateCompany });
+}
+
 // src/routes/company.route.ts
-async function companyRoutes(exp) {
-  app.post("/company", { onRequest: [jwtAuthenticate] }, companyController);
-  app.patch(
-    "/company/:companyid",
-    { onRequest: [jwtAuthenticate] },
-    updateCompanyController
-  );
-  app.delete(
-    "/company/:companyid",
-    { onRequest: [jwtAuthenticate] },
-    deleteCompanyController
-  );
+async function companyRoutes(app2) {
+  app2.addHook("onRequest", jwtAuthenticate);
+  app2.post("/company", companyController);
+  app2.delete("/company/:companyid", deleteCompanyController);
+  app2.patch("/company/:companyid", updateCompanyController);
+  app2.patch("/company/logo/:companyid", uploadLogoController);
 }
 
 // src/app.ts
@@ -537,12 +599,12 @@ var import_jwt = __toESM(require("@fastify/jwt"));
 
 // src/env/index.ts
 var import_config = require("dotenv/config");
-var z13 = __toESM(require("zod"));
-var envSchema = z13.object({
-  NODE_ENV: z13.enum(["dev", "prod", "test"]).default("dev"),
-  PORT: z13.coerce.number().default(3e3),
-  SECRET_JWT: z13.string(),
-  SECRET_COOKIE: z13.string()
+var z14 = __toESM(require("zod"));
+var envSchema = z14.object({
+  NODE_ENV: z14.enum(["dev", "prod", "test"]).default("dev"),
+  PORT: z14.coerce.number().default(3e3),
+  SECRET_JWT: z14.string(),
+  SECRET_COOKIE: z14.string()
 });
 var _env = envSchema.safeParse(process.env);
 if (!_env.success) {
@@ -553,16 +615,25 @@ var env = _env.data;
 
 // src/app.ts
 var import_cookie = __toESM(require("@fastify/cookie"));
+var import_multipart = __toESM(require("@fastify/multipart"));
+var import_formbody = __toESM(require("@fastify/formbody"));
+var import_cors = __toESM(require("@fastify/cors"));
 var app = (0, import_fastify.default)();
+app.register(import_multipart.default);
+app.register(import_formbody.default);
+app.register(import_cors.default, {
+  origin: true,
+  methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
+  credentials: true
+});
 app.register(userRoutes);
 app.register(invoiceRoutes);
 app.register(buildingRoutes);
 app.register(companyRoutes);
+app.register(import_cookie.default, { secret: env.SECRET_COOKIE });
 app.register(import_jwt.default, {
+  cookie: { cookieName: "token", signed: true },
   secret: env.SECRET_JWT
-});
-app.register(import_cookie.default, {
-  secret: env.SECRET_COOKIE
 });
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {

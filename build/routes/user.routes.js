@@ -108,12 +108,10 @@ async function Login(req, res) {
     }
     return res.status(200).setCookie("token", token, {
       path: "/",
-      secure: true,
-      // send cookie over HTTPS only
       httpOnly: true,
-      sameSite: true
-      // alternative CSRF protection
-    }).send({ token });
+      maxAge: 7 * 86400,
+      signed: true
+    }).send({ message: "Login successful" });
   } catch (error) {
     console.log(error);
   }
@@ -182,6 +180,14 @@ async function jwtAuthenticate(req, res) {
   }
 }
 
+// src/http/controllers/userLogout.ts
+async function Logout(req, res) {
+  return res.clearCookie("token", {
+    path: "/"
+    // Ensure the path matches the cookie path
+  }).status(200).send({ message: "Logout successful" });
+}
+
 // src/routes/user.routes.ts
 async function userRoutes(app) {
   app.post("/users", registerController);
@@ -189,6 +195,7 @@ async function userRoutes(app) {
   app.post("/login", Login);
   app.delete("/users", { onRequest: [jwtAuthenticate] }, deleteUserController);
   app.patch("/users", { onRequest: [jwtAuthenticate] }, updateUserController);
+  app.post("/logout", Logout);
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {

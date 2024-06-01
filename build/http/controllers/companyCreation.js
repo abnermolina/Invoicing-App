@@ -51,7 +51,8 @@ async function companyController(req, res) {
     data: {
       companyName,
       companyAddress,
-      userId: userid
+      userId: userid,
+      companyLogo: ""
     }
   });
   return res.status(201).send(company);
