@@ -16,9 +16,9 @@ export async function uploadLogoController(
 
   // Create an S3 instance with AWS credentials from environment variables
   const s3 = new S3({
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID as string,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
-    region: process.env.AWS_REGION as string,
+    accessKeyId: process.env.AWS_KEY_ID as string,
+    secretAccessKey: process.env.AWS_SECRET as string,
+    region: process.env.REGION as string,
   });
 
   // Define a schema for the data expected in the request parameters
@@ -48,7 +48,7 @@ export async function uploadLogoController(
 
   // Define parameters for uploading the image to S3
   const uploadParams = {
-    Bucket: process.env.AWS_S3_BUCKET_NAME as string, // Bucket name from environment variables
+    Bucket: process.env.S3_BUCKET_NAME as string, // Bucket name from environment variables
     Key: s3Key, // Unique key for the file in S3
     Body: image?.file, // Image data
     ContentType: image.mimetype, // Mime type of the image
