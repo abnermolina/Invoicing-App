@@ -601,7 +601,7 @@ var import_jwt = __toESM(require("@fastify/jwt"));
 var import_config = require("dotenv/config");
 var z14 = __toESM(require("zod"));
 var envSchema = z14.object({
-  NODE_ENV: z14.enum(["dev", "prod", "test"]).default("dev"),
+  NODE_ENV: z14.enum(["dev", "production", "test"]).default("dev"),
   PORT: z14.coerce.number().default(3e3),
   SECRET_JWT: z14.string(),
   SECRET_COOKIE: z14.string()
