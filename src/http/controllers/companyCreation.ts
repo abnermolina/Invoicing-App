@@ -1,6 +1,6 @@
-//companyCreation.ts
+// companyCreation.ts
 import { prisma } from "@/lib/prisma";
-import { FastifyReply, FastifyRequest } from "fastify"; //types
+import { FastifyReply, FastifyRequest } from "fastify"; // types
 import * as z from "zod";
 
 // function
@@ -22,8 +22,13 @@ export async function companyController(
       companyName,
       companyAddress,
       userId: userid,
+      companyLogo: "",
     },
   });
 
   return res.status(201).send(company);
 }
+
+// add error for unique company name
+// when company is deleted  also delete file from aws s3
+// when company is updated also update file from aws s3

@@ -45,11 +45,11 @@ export async function Login(
       .status(200)
       .setCookie("token", token, {
         path: "/",
-        secure: true, // send cookie over HTTPS only
         httpOnly: true,
-        sameSite: true, // alternative CSRF protection
+        maxAge: 7 * 86400,
+        signed: true,
       })
-      .send({ token });
+      .send({ message: "Login successful" });
   } catch (error) {
     console.log(error);
   }

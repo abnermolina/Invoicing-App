@@ -5,7 +5,11 @@ import { deleteBuildingController } from "@/http/controllers/deleteBuilding";
 import { jwtAuthenticate } from "@/middlewares/authUser";
 
 export async function buildingRoutes(app: FastifyInstance) {
-  app.post("/buildings", { onRequest: [jwtAuthenticate] }, buildingController);
+  app.post(
+    "/buildings/:companyid",
+    { onRequest: [jwtAuthenticate] },
+    buildingController
+  );
   app.patch(
     "/buildings/:buildingid",
     { onRequest: [jwtAuthenticate] },

@@ -1,7 +1,6 @@
 //getUserProfile.ts
 import { prisma } from "@/lib/prisma";
 import { FastifyReply, FastifyRequest } from "fastify"; //types
-import * as z from "zod";
 
 export async function getUserProfile(
   req: FastifyRequest, // type to req work from fastify

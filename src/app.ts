@@ -7,18 +7,29 @@ import { companyRoutes } from "./routes/company.route";
 import fastifyJwt from "@fastify/jwt";
 import { env } from "./env/index";
 import fastifyCookie from "@fastify/cookie";
+import fastifyMultipart from "@fastify/multipart";
+import fastifyFormBody from "@fastify/formbody";
+import cors from "@fastify/cors";
 
 export const app = fastify();
+
+app.register(fastifyMultipart);
+app.register(fastifyFormBody);
+
+app.register(cors, {
+  origin: true,
+  methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
+  credentials: true,
+});
 
 app.register(userRoutes);
 app.register(invoiceRoutes);
 app.register(buildingRoutes);
 app.register(companyRoutes);
 
-app.register(fastifyJwt, {
-  secret: env.SECRET_JWT,
-});
+app.register(fastifyCookie, { secret: env.SECRET_COOKIE });
 
-app.register(fastifyCookie, {
-  secret: env.SECRET_COOKIE,
+app.register(fastifyJwt, {
+  cookie: { cookieName: "token", signed: true },
+  secret: env.SECRET_JWT,
 });

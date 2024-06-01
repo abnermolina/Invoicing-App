@@ -44,13 +44,16 @@ model Buildings {
   user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId       String
   Invoice      Invoice[]
+  company      Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId    String
 }
 
 model Company {
-  id             String @id @default(uuid())
-  companyName    String @unique
+  id             String      @id @default(uuid())
+  companyName    String      @unique
   companyAddress String
   companyLogo    String
-  user           User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId         String
+  Buildings      Buildings[]
 }

@@ -1,20 +1,17 @@
-import fastify, { FastifyInstance } from "fastify";
-import { app } from "../app";
+import fastify, { FastifyInstance, FastifyRequest } from "fastify";
 import { companyController } from "@/http/controllers/companyCreation";
 import { updateCompanyController } from "@/http/controllers/updateCompanyInfo";
 import { deleteCompanyController } from "@/http/controllers/deleteCompany";
 import { jwtAuthenticate } from "@/middlewares/authUser";
+import { uploadLogoController } from "@/http/controllers/uploadCompanyLogo";
+export async function companyRoutes(app: FastifyInstance) {
+  app.addHook("onRequest", jwtAuthenticate);
 
-export async function companyRoutes(exp: FastifyInstance) {
-  app.post("/company", { onRequest: [jwtAuthenticate] }, companyController);
-  app.patch(
-    "/company/:companyid",
-    { onRequest: [jwtAuthenticate] },
-    updateCompanyController
-  );
-  app.delete(
-    "/company/:companyid",
-    { onRequest: [jwtAuthenticate] },
-    deleteCompanyController
-  );
+  app.post("/company", companyController);
+
+  app.delete("/company/:companyid", deleteCompanyController);
+
+  app.patch("/company/:companyid", updateCompanyController);
+
+  app.patch("/company/logo/:companyid", uploadLogoController);
 }

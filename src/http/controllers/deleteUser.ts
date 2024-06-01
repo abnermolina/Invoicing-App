@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/prisma";
 import { FastifyReply, FastifyRequest } from "fastify"; //types
-import * as z from "zod";
 
 // funtion
 
