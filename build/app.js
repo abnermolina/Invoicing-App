@@ -543,9 +543,9 @@ var import_path = __toESM(require("path"));
 async function uploadLogoController(req, res) {
   (0, import_dotenv.config)();
   const s3 = new import_aws_sdk.S3({
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    region: process.env.AWS_REGION
+    accessKeyId: process.env.AWS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET,
+    region: process.env.REGION
   });
   const uploadDataSchema = import_zod.z.object({
     companyid: import_zod.z.string()
@@ -560,7 +560,7 @@ async function uploadLogoController(req, res) {
   const fileExtension = import_path.default.extname(image.filename);
   const s3Key = `${(0, import_uuid.v4)()}${fileExtension}`;
   const uploadParams = {
-    Bucket: process.env.AWS_S3_BUCKET_NAME,
+    Bucket: process.env.S3_BUCKET_NAME,
     // Bucket name from environment variables
     Key: s3Key,
     // Unique key for the file in S3
@@ -602,7 +602,7 @@ var import_config = require("dotenv/config");
 var z14 = __toESM(require("zod"));
 var envSchema = z14.object({
   NODE_ENV: z14.enum(["dev", "production", "test"]).default("dev"),
-  PORT: z14.coerce.number().default(3e3),
+  PORT: z14.coerce.number().default(3333),
   SECRET_JWT: z14.string(),
   SECRET_COOKIE: z14.string()
 });

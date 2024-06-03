@@ -38,7 +38,7 @@ var import_config = require("dotenv/config");
 var z = __toESM(require("zod"));
 var envSchema = z.object({
   NODE_ENV: z.enum(["dev", "production", "test"]).default("dev"),
-  PORT: z.coerce.number().default(3e3),
+  PORT: z.coerce.number().default(3333),
   SECRET_JWT: z.string(),
   SECRET_COOKIE: z.string()
 });
