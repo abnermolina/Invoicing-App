@@ -75,7 +75,8 @@ async function Login(req, res) {
       path: "/",
       httpOnly: true,
       maxAge: 7 * 86400,
-      signed: true
+      signed: true,
+      secure: process.env.NODE_ENV === "production"
     }).send({ message: "Login successful" });
   } catch (error) {
     console.log(error);
