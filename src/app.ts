@@ -17,9 +17,10 @@ app.register(fastifyMultipart);
 app.register(fastifyFormBody);
 
 app.register(cors, {
-  origin: "http://localhost:5173",
+  origin: "origin",
   methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
   credentials: true,
+  allowedHeaders: ["content-type"]
 });
 
 app.register(userRoutes);
