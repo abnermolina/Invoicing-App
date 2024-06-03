@@ -112,7 +112,7 @@ async function Login(req, res) {
       httpOnly: true,
       maxAge: 7 * 86400,
       signed: true,
-      secure: process.env.NODE_ENV === "production"
+      secure: process.env.NODE_ENV === "prod"
     }).send({ message: "Login successful" });
   } catch (error) {
     console.log(error);
@@ -602,7 +602,7 @@ var import_jwt = __toESM(require("@fastify/jwt"));
 var import_config = require("dotenv/config");
 var z14 = __toESM(require("zod"));
 var envSchema = z14.object({
-  NODE_ENV: z14.enum(["dev", "production", "test"]).default("dev"),
+  NODE_ENV: z14.enum(["dev", "prod", "test"]).default("dev"),
   PORT: z14.coerce.number().default(3333),
   SECRET_JWT: z14.string(),
   SECRET_COOKIE: z14.string()
