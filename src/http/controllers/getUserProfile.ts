@@ -12,7 +12,16 @@ export async function getUserProfile(
     where: {
       id: userid,
     },
-    include: { Buildings: true, Invoice: true, Company: true },
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      Buildings: true,
+      Invoice: true,
+      Company: true,
+      // exclude the password field
+      password: false,
+    },
   });
   return res.status(200).send({
     user: user,
