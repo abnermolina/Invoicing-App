@@ -622,7 +622,7 @@ var app = (0, import_fastify.default)();
 app.register(import_multipart.default);
 app.register(import_formbody.default);
 app.register(import_cors.default, {
-  origin: true,
+  origin: "http://localhost:5173",
   methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
   credentials: true
 });
