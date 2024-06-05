@@ -22,6 +22,7 @@ export async function getUserProfile(
       // exclude the password field
       password: false,
     },
+    
   });
   return res.status(200).send({
     user: user,

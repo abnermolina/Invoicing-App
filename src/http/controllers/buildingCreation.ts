@@ -17,11 +17,11 @@ export async function buildingController(
     companyid: z.string(),
   });
 
-  const userid = req.user.sub;
+  const userid = req.user.sub; // Requires the user to be logged in
 
-  const { buildingName, address } = buildingSchema.parse(req.body);
+  const { buildingName, address } = buildingSchema.parse(req.body); // parse the body of the request
 
-  const { companyid } = companyidSchema.parse(req.params);
+  const { companyid } = companyidSchema.parse(req.params); // parse the companyid in the url
 
   const building = await prisma.buildings.create({
     data: {

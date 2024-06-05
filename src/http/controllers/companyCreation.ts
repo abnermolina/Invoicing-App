@@ -22,7 +22,7 @@ export async function companyController(
       companyName,
       companyAddress,
       userId: userid,
-      companyLogo: "",
+      companyLogo: "", // leave the logo empty and add it with the uploadCompanyLogo controller
     },
   });
 
