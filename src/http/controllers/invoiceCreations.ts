@@ -44,9 +44,4 @@ export async function invoiceController(
   });
 
   return res.status(201).send(invoice);
-
-  //  TO DO : GET BUILDING ID WITHOUT PASSING URL,
-  //  NODEMAILER SEND EMAIL TO COMPANY,
-  //  CREATE COMPANY TABLE,
-  //  UPDATE & DELETE USER, BUILDING, INV, COMPANY INFORMATION
 }
