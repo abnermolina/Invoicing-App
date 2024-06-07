@@ -17,7 +17,7 @@ app.register(fastifyMultipart);
 app.register(fastifyFormBody);
 
 app.register(cors, {
-  origin: "*", // change this when using a custom domain, for now it is set to Miguel's port
+  origin: "http://localhost:5173", // change this when using a custom domain, for now it is set to Miguel's port
   methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
   credentials: true,
   allowedHeaders: ["content-type"]
