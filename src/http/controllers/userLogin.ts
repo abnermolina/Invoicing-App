@@ -48,7 +48,7 @@ export async function Login(
         httpOnly: true,
         maxAge: 7 * 86400,
         signed: true,
-        secure: process.env.NODE_ENV === "production",
+        secure: true,
         sameSite: "none"
       })
       .send({ message: "Login successful" });
