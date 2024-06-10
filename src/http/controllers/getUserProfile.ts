@@ -17,12 +17,10 @@ export async function getUserProfile(
       email: true,
       name: true,
       Buildings: true,
-      Invoice: true,
       Company: true,
       // exclude the password field
       password: false,
     },
-    
   });
   return res.status(200).send({
     user: user,

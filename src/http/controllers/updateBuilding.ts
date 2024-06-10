@@ -10,6 +10,7 @@ export async function updateBuildingController(
   const updateBuildingSchema = z.object({
     buildingName: z.string().optional(),
     address: z.string().optional(),
+    letterIdBuilding: z.string().optional(),
   });
 
   const buildingidSchema = z.object({
@@ -19,7 +20,8 @@ export async function updateBuildingController(
   const userid = req.user.sub;
 
   try {
-    const { buildingName, address } = updateBuildingSchema.parse(req.body);
+    const { buildingName, address, letterIdBuilding } =
+      updateBuildingSchema.parse(req.body);
 
     const { buildingid } = buildingidSchema.parse(req.params);
 
@@ -31,6 +33,7 @@ export async function updateBuildingController(
       data: {
         buildingName,
         address,
+        letterIdBuilding,
       },
     });
 

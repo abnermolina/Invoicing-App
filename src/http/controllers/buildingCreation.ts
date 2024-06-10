@@ -11,6 +11,7 @@ export async function buildingController(
   const buildingSchema = z.object({
     buildingName: z.string(),
     address: z.string(),
+    letterIdBuilding: z.string().optional(),
   });
 
   const companyidSchema = z.object({
@@ -19,7 +20,9 @@ export async function buildingController(
 
   const userid = req.user.sub; // Requires the user to be logged in
 
-  const { buildingName, address } = buildingSchema.parse(req.body); // parse the body of the request
+  const { buildingName, address, letterIdBuilding } = buildingSchema.parse(
+    req.body
+  ); // parse the body of the request
 
   const { companyid } = companyidSchema.parse(req.params); // parse the companyid in the url
 
@@ -27,6 +30,7 @@ export async function buildingController(
     data: {
       buildingName,
       address,
+      letterIdBuilding,
       userId: userid,
       companyId: companyid,
     },

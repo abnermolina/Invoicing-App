@@ -9,10 +9,19 @@ export async function invoiceController(
   res: FastifyReply // type for res to work
 ) {
   const invoiceSchema = z.object({
-    price: z.number(),
-    invoiceNum: z.string(),
-    serviceDescription: z.string(),
+    invoiceNum: z.number().nonnegative().optional(),
     unit: z.string(),
+    createdAt: z.date().optional(),
+    customField: z.string().optional(),
+    poBox: z.string().optional(),
+    serviceDescription: z.string().optional(),
+    services: z.array(
+      z.object({
+        serviceName: z.string(),
+        price: z.number(),
+        serviceQuantity: z.number(),
+      })
+    ),
   });
 
   const buildingidSchema = z.object({
@@ -21,25 +30,74 @@ export async function invoiceController(
 
   const { buildingid } = buildingidSchema.parse(req.params);
 
-  const { price, invoiceNum, serviceDescription, unit } = invoiceSchema.parse(
-    req.body
-  );
+  const {
+    invoiceNum,
+    customField,
+    unit,
+    createdAt,
+    services,
+    poBox,
+    serviceDescription,
+  } = invoiceSchema.parse(req.body);
 
   const userid = req.user.sub;
 
-  const building = await prisma.user.findUnique({
-    where: { id: userid },
-    select: { Buildings: true },
-  });
+  // sum all the prices in the services array
+  const totalPrice = services.reduce(
+    (acc, service) => acc + service.price * service.serviceQuantity,
+    0
+  );
+
+  let newInvoiceNum;
+
+  // if the user input an invoice number then check if it already exists
+  if (invoiceNum !== undefined) {
+    const existingNum = await prisma.invoice.findFirst({
+      where: {
+        buildingsId: buildingid,
+        userId: userid,
+        invoiceNum: invoiceNum,
+      },
+    });
+    if (existingNum?.invoiceNum) {
+      return res.status(400).send({
+        message: "Invoice number already exists",
+      });
+    }
+    // If the number does not already exist use the provided invoice number
+    newInvoiceNum = invoiceNum;
+  } else {
+    // Retrieve the latest invoice number and increment it by 1
+    const latestInvoice = await prisma.invoice.findFirst({
+      orderBy: {
+        invoiceNum: "desc",
+      },
+    });
+    newInvoiceNum = latestInvoice ? latestInvoice.invoiceNum + 1 : 1;
+  }
 
   const invoice = await prisma.invoice.create({
     data: {
-      price,
-      invoiceNum,
-      serviceDescription,
+      customField,
+      invoiceNum: newInvoiceNum,
       unit,
+      poBox,
+      createdAt,
+      serviceDescription,
       userId: userid,
       buildingsId: buildingid,
+      totalPrice: totalPrice,
+      services: {
+        //  create multiple service records associated with a single invoice
+        create: services.map((services) => ({
+          serviceName: services.serviceName,
+          price: services.price,
+          serviceQuantity: services.serviceQuantity,
+        })),
+      },
+    },
+    include: {
+      services: true,
     },
   });
 

@@ -10,6 +10,7 @@ export async function updateCompanyController(
   const updateCompanySchema = z.object({
     companyName: z.string().optional(),
     companyAddress: z.string().optional(),
+    companyEmail: z.string().email().optional(),
   });
 
   const companyidSchema = z.object({
@@ -19,7 +20,8 @@ export async function updateCompanyController(
   const userid = req.user.sub;
 
   try {
-    const { companyName, companyAddress } = updateCompanySchema.parse(req.body);
+    const { companyName, companyAddress, companyEmail } =
+      updateCompanySchema.parse(req.body);
 
     const { companyid } = companyidSchema.parse(req.params);
 
@@ -31,6 +33,7 @@ export async function updateCompanyController(
       data: {
         companyName,
         companyAddress,
+        companyEmail,
       },
     });
 

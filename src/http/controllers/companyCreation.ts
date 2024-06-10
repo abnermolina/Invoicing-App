@@ -11,17 +11,21 @@ export async function companyController(
   const companySchema = z.object({
     companyName: z.string(),
     companyAddress: z.string(),
+    companyEmail: z.string(),
   });
 
   const userid = req.user.sub;
 
-  const { companyName, companyAddress } = companySchema.parse(req.body);
+  const { companyName, companyAddress, companyEmail } = companySchema.parse(
+    req.body
+  );
 
   const company = await prisma.company.create({
     data: {
       companyName,
       companyAddress,
       userId: userid,
+      companyEmail,
       companyLogo: "", // leave the logo empty and add it with the uploadCompanyLogo controller
     },
   });

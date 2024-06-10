@@ -20,7 +20,7 @@ app.register(cors, {
   origin: "http://localhost:5173", // change this when using a custom domain, for now it is set to Miguel's port
   methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
   credentials: true,
-  allowedHeaders: ["content-type"]
+  allowedHeaders: ["content-type"],
 });
 
 // We register all our desired routes on the app

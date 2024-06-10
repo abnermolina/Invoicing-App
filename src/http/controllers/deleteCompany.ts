@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { FastifyReply, FastifyRequest } from "fastify"; //types
 import * as z from "zod";
 import dotenv from "dotenv";
-import {S3Client, DeleteObjectCommand} from "@aws-sdk/client-s3";
+import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
 
 // funtion
 export async function deleteCompanyController(
@@ -12,7 +12,7 @@ export async function deleteCompanyController(
   dotenv.config();
 
   const s3 = new S3Client({
-    credentials:{
+    credentials: {
       accessKeyId: process.env.AWS_KEY_ID as string,
       secretAccessKey: process.env.AWS_SECRET as string,
     },
@@ -35,23 +35,25 @@ export async function deleteCompanyController(
     const { companyid } = validatedData.data;
 
     const logo = await prisma.company.findUnique({
-      where:{
+      where: {
+        
         id: companyid,
         userId: userid,
-      }, select : {
+      },
+      select: {
         companyLogo: true,
-        id : false,
+        id: false,
         companyAddress: false,
         companyName: false,
         userId: false,
         Buildings: false,
-      }
-    })
+      },
+    });
 
     const params = {
       Bucket: process.env.S3_BUCKET_NAME,
       Key: logo?.companyLogo,
-    }
+    };
 
     const command = new DeleteObjectCommand(params);
     await s3.send(command);

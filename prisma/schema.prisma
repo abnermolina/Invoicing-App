@@ -22,38 +22,67 @@ model User {
   Invoice   Invoice[]
   Buildings Buildings[]
   Company   Company[]
+  Expenses  Expenses[]
 }
 
 model Invoice {
   id                 String    @id @default(uuid())
-  price              Float
-  invoiceNum         String
-  serviceDescription String
+  invoiceNum         Int
   unit               String
-  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  poBox              String?
+  customField        String?
+  serviceDescription String?
+  totalPrice         Float
+  services           Service[]
   createdAt          DateTime  @default(now())
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId             String
   building           Buildings @relation(fields: [buildingsId], references: [id], onDelete: Cascade)
   buildingsId        String
 }
 
+model Service {
+  id              String  @id @default(uuid())
+  price           Float
+  serviceName     String  @unique
+  serviceQuantity Int
+  invoice         Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  invoiceId       String
+}
+
 model Buildings {
-  id           String    @id @default(uuid())
-  buildingName String    @unique
-  address      String
-  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId       String
-  Invoice      Invoice[]
-  company      Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  companyId    String
+  id               String    @id @default(uuid())
+  buildingName     String    @unique
+  address          String
+  letterIdBuilding String?   @unique
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId           String
+  Invoice          Invoice[]
+  company          Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId        String
 }
 
 model Company {
   id             String      @id @default(uuid())
   companyName    String      @unique
   companyAddress String
-  companyLogo    String 
+  companyLogo    String
+  companyEmail   String
   user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId         String
   Buildings      Buildings[]
+  Expenses       Expenses[]
+}
+
+model Expenses {
+  id                 String   @id @default(uuid())
+  expenseDescription String
+  expenseAmount      Int
+  paidTo             String
+  expenseDate        DateTime @default(now())
+  paymentMethod      String
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId             String
+  company            Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId          String
 }
