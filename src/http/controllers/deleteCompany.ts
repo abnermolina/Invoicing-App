@@ -36,7 +36,6 @@ export async function deleteCompanyController(
 
     const logo = await prisma.company.findUnique({
       where: {
-        
         id: companyid,
         userId: userid,
       },
@@ -51,7 +50,7 @@ export async function deleteCompanyController(
     });
 
     const params = {
-      Bucket: process.env.S3_BUCKET_NAME,
+      Bucket: process.env.LOGO_S3_BUCKET_NAME,
       Key: logo?.companyLogo,
     };
 

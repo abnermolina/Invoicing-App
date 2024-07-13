@@ -5,6 +5,7 @@ CREATE TABLE "User" (
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "userProfilePhoto" TEXT NOT NULL,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -14,13 +15,9 @@ CREATE TABLE "Invoice" (
     "id" TEXT NOT NULL,
     "invoiceNum" INTEGER NOT NULL,
     "unit" TEXT NOT NULL,
-    "buildingLetterId" TEXT,
-    "customerName" TEXT NOT NULL,
-    "customerAddress" TEXT NOT NULL,
-    "companyAddressInvoice" TEXT NOT NULL,
-    "companyNameInvoice" TEXT NOT NULL,
     "poBox" TEXT,
     "customField" TEXT,
+    "serviceDescription" TEXT,
     "totalPrice" DOUBLE PRECISION NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "userId" TEXT NOT NULL,
@@ -31,12 +28,13 @@ CREATE TABLE "Invoice" (
 
 -- CreateTable
 CREATE TABLE "Service" (
+    "id" TEXT NOT NULL,
     "price" DOUBLE PRECISION NOT NULL,
-    "serviceDescription" TEXT NOT NULL,
+    "serviceName" TEXT NOT NULL,
     "serviceQuantity" INTEGER NOT NULL,
     "invoiceId" TEXT NOT NULL,
 
-    CONSTRAINT "Service_pkey" PRIMARY KEY ("invoiceId")
+    CONSTRAINT "Service_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -79,6 +77,9 @@ CREATE TABLE "Expenses" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Service_serviceName_key" ON "Service"("serviceName");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Buildings_buildingName_key" ON "Buildings"("buildingName");

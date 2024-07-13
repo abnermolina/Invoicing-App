@@ -14,15 +14,16 @@ datasource db {
 }
 
 model User {
-  id        String      @id @default(uuid())
-  name      String
-  email     String      @unique
-  password  String
-  createdAt DateTime    @default(now())
-  Invoice   Invoice[]
-  Buildings Buildings[]
-  Company   Company[]
-  Expenses  Expenses[]
+  id               String      @id @default(uuid())
+  name             String
+  email            String      @unique
+  password         String
+  createdAt        DateTime    @default(now())
+  userProfilePhoto String?
+  Invoice          Invoice[]
+  Buildings        Buildings[]
+  Company          Company[]
+  Expenses         Expenses[]
 }
 
 model Invoice {

@@ -6,9 +6,15 @@ import { deleteUserController } from "@/http/controllers/deleteUser";
 import { updateUserController } from "@/http/controllers/updateUserInfo";
 import { jwtAuthenticate } from "@/middlewares/authUser";
 import { Logout } from "@/http/controllers/userLogout";
+import { uploadProfilePhotoController } from "@/http/controllers/uploadUserProfilePhoto";
 
 export async function userRoutes(app: FastifyInstance) {
   app.post("/users", registerController);
+  app.patch(
+    "/users/photos",
+    { onRequest: [jwtAuthenticate] },
+    uploadProfilePhotoController
+  );
   app.get("/profile", { onRequest: [jwtAuthenticate] }, getUserProfile);
   app.post("/login", Login);
   app.delete("/users", { onRequest: [jwtAuthenticate] }, deleteUserController);
