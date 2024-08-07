@@ -19,5 +19,5 @@ export async function userRoutes(app: FastifyInstance) {
   app.post("/login", Login);
   app.delete("/users", { onRequest: [jwtAuthenticate] }, deleteUserController);
   app.patch("/users", { onRequest: [jwtAuthenticate] }, updateUserController);
-  app.post("/logout", Logout); // does it need to be protected?
+  app.post("/logout", Logout); // does it need to be protected? no
 }

@@ -54,15 +54,17 @@ export async function deleteCompanyController(
       Key: logo?.companyLogo,
     };
 
-    const command = new DeleteObjectCommand(params);
-    await s3.send(command);
-
     const deleteCompany = await prisma.company.delete({
       where: {
         id: companyid,
         userId: userid,
       },
     });
+
+    if (logo?.companyLogo) {
+      const command = new DeleteObjectCommand(params);
+      await s3.send(command);
+    }
 
     if (!deleteCompany) {
       return res.status(404).send({
